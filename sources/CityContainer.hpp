@@ -64,7 +64,7 @@ namespace pandemic{
             diseaseLevel--;
         }
         /*Returns whether the city is cured or not.*/
-        bool isCured(){return cureFounded;}
+        bool hasCure(){return cureFounded;}
 
 
     private:
@@ -76,6 +76,10 @@ namespace pandemic{
         void setCured(){ cureFounded = true;}
     
     friend class Board;
+    friend class Player;
+    friend class Scientist;
+    friend class Researcher;
+    friend class GeneSplicer;
     };
 }
 #endif //EX4_A_CITYCONTAINER_HPP

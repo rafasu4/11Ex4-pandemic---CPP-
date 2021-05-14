@@ -14,32 +14,29 @@ namespace pandemic {
         string className;
     public:
         /*Constructor.*/
-        Medic(Board board, City city): pandemic::Player(board, city), board(board), currentCity(city),
-                className("Medic"){
-        }
-        /*Move from current city to one of it's neighbors.*/
-        Medic &drive(City city);
-        /*Move from current city to city that player has a card of it. Cost this city's card*/
-        Medic &fly_direct(City city);
-        /*Move from current city to any city. Cost current city's card*/
-        void fly_shuttle(City city);
-        /*Move to any other city that has a research lab, if current city has one.*/
-        Medic &fly_charter(City city);
-        /*Builds a research lab in current city. Cost current city's card.*/
-        void build();
-        /*Discovers a cure to a given color type(doesn't have to be the same as city's). Player must have a research lab in current city.
-         * Cost 5 city card of the same color.
-         * Note: in case cure was already found, nothing will happen.*/
-        void discover_cure(Color color);
-        /*Lowers current city's disease level by one.
+        Medic(Board board, City city): pandemic::Player(board, city),className("Medic"){}
+        /*Move from current city to one of it's neighbors.
+         * Note: if cure has founded in the city, disease level will automatic lower to zero.*/
+        void drive(City city) override;
+        /*Move from current city to city that player has a card of it. Cost this city's card.
+         * Note: if cure has founded in the city, disease level will automatic lower to zero.*/
+        Medic &fly_direct(City city) override;
+        /*Move from current city to any city. Cost current city's card.
+         * Note: if cure has founded in the city, disease level will automatic lower to zero.*/
+        Medic &fly_shuttle(City city) override;
+        /*Move to any other city that has a research lab, if current city has one.
+         * Note: if cure has founded in the city, disease level will automatic lower to zero.*/
+        Medic &fly_charter(City city) override;
+        /*Lowers current city's disease level to zero.
          * Note: in case cure was already found, this action will lower current city's disease level to 0.
          * Note: this action is illegal in case current city's disease level is 0. */
-        Medic &treat(City city);
-
-        /*Takes a given city's card to the player hand.
-         * Note: each city has only one card.
-         * Note: if player has this city's card, nothing will happen.*/
-        Medic &take_card(City city);
+        Medic &treat(City city) override;
+        /*Returns this player role.*/
+        string role(){return className;}
+        
+    private:
+        /*If cure has found int the destination city - lower disease level to zero.*/
+        void medicAbility(CityContainer current);
     };
 }
 

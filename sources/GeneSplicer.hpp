@@ -14,32 +14,13 @@ namespace pandemic {
         string className;
     public:
         /*Constructor.*/
-        GeneSplicer(Board board, City city): pandemic::Player(board, city), board(board), currentCity(city),
-                className("GeneSplicer"){
-        }
-        /*Move from current city to one of it's neighbors.*/
-        GeneSplicer &drive(City city);
-        /*Move from current city to city that player has a card of it. Cost this city's card*/
-        GeneSplicer &fly_direct(City city);
-        /*Move from current city to any city. Cost current city's card*/
-        void fly_shuttle(City city);
-        /*Move to any other city that has a research lab, if current city has one.*/
-        GeneSplicer &fly_charter(City city);
-        /*Builds a research lab in current city. Cost current city's card.*/
-        void build();
+        GeneSplicer(Board board, City city): pandemic::Player(board, city),className("GeneSplicer"){}
         /*Discovers a cure to a given color type(doesn't have to be the same as city's). Player must have a research lab in current city.
          GeneSplicer can use any cards colors combination - not just the current city's disease color.
          * Note: in case cure was already found, nothing will happen.*/
-        void discover_cure(Color color);
-        /*Lowers current city's disease level by one.
-         * Note: in case cure was already found, this action will lower current city's disease level to 0.
-         * Note: this action is illegal in case current city's disease level is 0. */
-        GeneSplicer &treat(City city);
-
-        /*Takes a given city's card to the player hand.
-         * Note: each city has only one card.
-         * Note: if player has this city's card, nothing will happen.*/
-        GeneSplicer &take_card(City city);
+        void discover_cure(Color color) override;
+         /*Returns this player role.*/
+        string role(){return className;}
     };
 }
 #endif //EX4_A_GENESPLICER_HPP
