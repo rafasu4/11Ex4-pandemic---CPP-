@@ -8,42 +8,63 @@ namespace pandemic{
 
     void pandemic::Medic::drive(City city) {
         Player::drive(city);
-        CityContainer current = getCityContainer(city);
-        medicAbility(current);
+        CityContainer& cityInfo = getCityContainer(city);
+        while (cityInfo.getDiseaseLevel() > 0)
+        {
+            cityInfo.lowerDiseaseLevel();
+        }   
     }
 
     Medic& pandemic::Medic::fly_direct(City city){
         Player::fly_direct(city);
-        CityContainer current = getCityContainer(city);
-        medicAbility(current);
+        CityContainer& cityInfo = getCityContainer(city);
+        while (cityInfo.getDiseaseLevel() > 0)
+        {
+            cityInfo.lowerDiseaseLevel();
+        }   
         return *this;
     }
 
     Medic& pandemic::Medic::fly_shuttle(City city){
         Player::fly_shuttle(city);
-        CityContainer current = getCityContainer(city);
-        medicAbility(current);
+        CityContainer& cityInfo = getCityContainer(city);
+        while (cityInfo.getDiseaseLevel() > 0)
+        {
+            cityInfo.lowerDiseaseLevel();
+        }   
         return *this;
     }
 
     Medic& pandemic::Medic::fly_charter(City city){
         Player::fly_charter(city);
-        CityContainer current = getCityContainer(city);
-        medicAbility(current);
+        CityContainer& cityInfo = getCityContainer(city);
+        while (cityInfo.getDiseaseLevel() > 0)
+        {
+            cityInfo.lowerDiseaseLevel();
+        }   
         return *this;
     }
 
     Medic &pandemic::Medic::treat(City city){
-        CityContainer current = getCityContainer(city);
-       medicAbility(current);
+       CityContainer& cityInfo = board.getCityContainer(city);
+       if(cityInfo.getDiseaseLevel() == 0){
+           throw "City is already cured!\n";
+       }
+       while (cityInfo.getDiseaseLevel() > 0)
+       {
+           cityInfo.lowerDiseaseLevel();
+       }
        return *this;
     }
 
-    void pandemic::Medic::medicAbility(CityContainer current){
-        if(current.hasCure()){
-            while (current.getDiseaseLevel() > 0){
-                current.lowerDiseaseLevel();
+    void pandemic::Medic::medicAbility(City city){
+        CityContainer& cityInfo = getCityContainer(city);
+        
+        if(cityInfo.hasCure()){
+            while (cityInfo.getDiseaseLevel() > 0){
+                cityInfo.lowerDiseaseLevel();
             }
         }
+        cityInfo = getCityContainer(city);
     }
 }

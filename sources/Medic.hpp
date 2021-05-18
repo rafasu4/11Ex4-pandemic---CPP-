@@ -9,12 +9,10 @@
 namespace pandemic {
 
     class Medic: public Player {
-        Board board;
-        City currentCity;
         string className;
     public:
         /*Constructor.*/
-        Medic(Board board, City city): pandemic::Player(board, city),className("Medic"){}
+        Medic(Board& board, City city): pandemic::Player(board, city),className("Medic"){}
         /*Move from current city to one of it's neighbors.
          * Note: if cure has founded in the city, disease level will automatic lower to zero.*/
         void drive(City city) override;
@@ -32,11 +30,11 @@ namespace pandemic {
          * Note: this action is illegal in case current city's disease level is 0. */
         Medic &treat(City city) override;
         /*Returns this player role.*/
-        string role(){return className;}
+        string role() override{return className;}
         
     private:
         /*If cure has found int the destination city - lower disease level to zero.*/
-        void medicAbility(CityContainer current);
+        void medicAbility(City city);
     };
 }
 

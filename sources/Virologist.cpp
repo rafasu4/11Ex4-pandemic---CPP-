@@ -14,10 +14,10 @@ namespace pandemic{
             //this action cost the given city card
             if(hasCard(city)){
                 City src = currentCity;
-                fly_direct(city);
+                currentCity = city;
                 Player::treat(city);
-                take_card(city);
-                fly_shuttle(src);//return to the original city
+                currentCity = src;
+                removeCard(city);
             }
             else{
                 throw "Illegal action! doesn't have " + getBoard().cityToString(city) + " card!\n";

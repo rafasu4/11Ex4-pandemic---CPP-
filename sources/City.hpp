@@ -11,7 +11,7 @@
 
 
 namespace pandemic {
-    enum City {
+    enum class City {
         //BLUE
         Atlanta, //=0
         Chicago, //=1
@@ -64,7 +64,7 @@ namespace pandemic {
         Sydney, //=45
         Taipei, //=46
         Tokyo, //=47
-        emptyCity//used in default constrctor of player
+        emptyCity//used in default constrctor of CityContainer
     };
 
 

@@ -6,15 +6,19 @@
 
 namespace pandemic{
     Dispatcher &pandemic::Dispatcher::fly_direct(City city){
-        City src = currentCity;
-        //if has this current city's card - return it to the player's hand after fly_direct action
-        if(hasCard(src)){
-            Player::fly_direct(city);
-            take_card(src);
-            return *this;
+        //if the destination same as current city - an error
+           if(currentCity == city){
+             string message = "Can't fly from city to itself!";
+             throw message;
+         }
+        CityContainer& cityInfo = getCityContainer(currentCity);
+        //if has a research lab - fly for free
+        if(cityInfo.hasResearchLab()){
+            currentCity = city;
         }
-        take_card(src);//take a card for build action
-        Player::fly_direct(city);
+        else{
+            Player::fly_direct(city);
+        }
         return *this;
     }
 }

@@ -11,7 +11,7 @@ namespace pandemic{
             Player::treat(city);
         }
         else{
-            CityContainer cityInfo = getCityContainer(currentCity);
+            CityContainer& cityInfo = getCityContainer(currentCity);
             //if the given city isn't one of current city's neighbors - illegal action
             if (!cityInfo.hasConnection(city)){
                 string message = "Illegal action! " + getBoard().cityToString(city) + " isn't current city or one of its neighbors!\n";

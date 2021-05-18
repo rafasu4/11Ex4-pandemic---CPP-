@@ -20,23 +20,22 @@ namespace pandemic {
         /*The current position in which the player is at.*/
         City currentCity;
         /*The current board in which the player is playing.*/
-        Board board;
+        Board& board;
         /*The collection of card in the player's hand.*/
         set<City> cityCards;
-        /*The role of the player.*/
-        string className;
+      
 
     public:
         /*Constructor.*/
-        Player(Board board, City city): board(board),currentCity(city){}
+        Player(Board& board, City city): board(board), currentCity(city){}
         /*Move from current city to one of it's neighbors.*/
         virtual void drive(City city);
         /*Move from current city to city that player has a card of it. Cost that city's card*/
         virtual Player &fly_direct(City city);
         /*Move from current city to any city. Cost current city's card*/
-        virtual Player &fly_shuttle(City city);
-        /*Move to any other city that has a research lab, if current city has one.*/
         virtual Player &fly_charter(City city);
+        /*Move to any other city that has a research lab, if current city has one.*/
+        virtual Player &fly_shuttle(City city);
         /*Builds a research lab in current city. Cost current city's card.*/
         virtual void build();
         /*Discovers a cure to a given color type(doesn't have to be the same as city's). Player must have a research lab in current city.
@@ -53,24 +52,24 @@ namespace pandemic {
         Player &take_card(City city);
         /*Returns the city currently the player is at.*/
         City getCurrentCity();
-        /*Returns the data about the given city in a container.*/
-        CityContainer getCityContainer(City city);
+        /*Returns data about the given city in a container.*/
+        CityContainer& getCityContainer(City city);
         /*Return the board currently is played.*/
-        Board getBoard();
+        Board& getBoard();
+        /*Returns this player role.*/
+        virtual string role() = 0;
+        /*Returns player's hand size.*/
+        int handSize();
 
     protected:
         /*Set player's current city to the given one.*/
         void setCurrentCity(City city);
-        /*Removes a card from card collection.*/
+        /*Removes a card from player's hand.*/
         void removeCard(City city);
         /*Returns whether the player has the given city card.*/
         bool hasCard(City city);
         /*Return whether the player has 5 card of the same given colors.*/
         bool hasNCards(Color color, int n);
-        /*Discard given city's card from player's hand.*/
-        void discard(City city);
-        /*Returns player's hand size.*/
-        int handSize();
     };
 }
 

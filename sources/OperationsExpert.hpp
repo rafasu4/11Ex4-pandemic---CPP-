@@ -12,16 +12,14 @@ namespace pandemic {
 
 /*This class represents a specific type of a player. OperationsExpert special ability: use "Build" without card cost.*/
     class OperationsExpert : public Player {
-        Board board;
-        City currentCity;
         string className;
     public:
         /*Constructor.*/
-        OperationsExpert(Board board, City city): pandemic::Player(board, city), className("OperationsExpert"){}
+        OperationsExpert(Board& board, City city): pandemic::Player(board, city), className("OperationsExpert"){}
        /*Builds a research lab in current city without the Cost of current city's card.*/
         void build() override;
         /*Returns this player role.*/
-        string role(){return className;}
+        string role() override{return className;}
     };
 
 }

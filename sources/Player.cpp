@@ -1,16 +1,17 @@
  #include "Player.hpp"
  #include "CityContainer.hpp"
+ 
 
  namespace pandemic{
 
      void pandemic::Player::removeCard(City city){
          if(hasCard(city)){
-             set<City>::iterator it = cityCards.begin();
-             //going over the cards
-             for (; it != cityCards.end(); ++it)
-                 if(*it == city){
-                     cityCards.erase(it);
+             for(auto& card : cityCards){
+                 if(card == city){
+                     cityCards.erase(card);
+                     break;
                  }
+             }
          }
      }
 
@@ -20,106 +21,105 @@
          return false;
      }
 
-     void pandemic::Player::discard(City city){
-         if(hasCard(city)){
-             for(set<City>::iterator it = cityCards.begin(); it != cityCards.end(); ++it){
-                 if(*it == city){
-                     cityCards.erase(it);
-                 }
-             }
-         }
-     }
-
      bool pandemic::Player::hasNCards(Color color, int n){
-         bool flag = false;
          int counter = 0;
          for(City card :cityCards){
-             CityContainer currentCardInfo = getCityContainer(card);
+             CityContainer& currentCardInfo = getCityContainer(card);
              if(currentCardInfo.getColor() == color){
                  counter++;
              }
              if(counter == n){
-                 flag = true;
-                 break;}
+                 return true;
+             }
          }
-         return flag;
+         return false;
      }
 
      int pandemic::Player::handSize(){return cityCards.size();}
 
      City pandemic::Player::getCurrentCity(){return currentCity;}
 
-     CityContainer pandemic::Player::getCityContainer(City city) {return this->getBoard().getCityContainer(city);}
+     CityContainer& pandemic::Player::getCityContainer(City city) {
+         Board& board = getBoard();
+         return board.getCityContainer(city);}
 
      void pandemic::Player::drive(City city){
-          CityContainer current = this->getCityContainer(city);
+        //    if(getCurrentCity() == city){
+        //      string message = "Can't fly from city to itself!";
+        //      throw message;
+        //  }
+          CityContainer& cityInfo = getCityContainer(currentCity);
           //if the given city isn't in current's neighbors list
-          if(!current.hasConnection(city)){
+          if(!cityInfo.hasConnection(city)){
               throw "Illegal action! can't fly to a non-neighbor city!";
+              
           }
           this->currentCity = city;
       }
 
      Player& pandemic::Player::fly_direct(City city){
-         CityContainer current = pandemic::Player::getCityContainer(city);
-         //if the player doesn't have the given city's card
+         if(currentCity == city){
+             string message = "Can't fly from city to itself!";
+             throw message;
+         }
          if(!hasCard(city)){
-             string message = "Illegal action! doesn't have" + this->getBoard().cityToString(city) + "card!";
+             Board& board = getBoard();
+             string message = "Doesn't have " + board.cityToString(city) + " card!";
              throw message;
          }
-         //remove the given city's card from player's hand
          removeCard(city);
-         this->currentCity = city;
+         currentCity = city;
          return *this;
      }
+      
 
-     Player& pandemic::Player::fly_shuttle(City city){
-         CityContainer current = this->pandemic::Player::getCityContainer(city);
-         //if the player doesn't have current city's card
-         if(!hasCard(getCurrentCity())){
-             string message = "Illegal action! doesn't have" + getBoard().cityToString(getCurrentCity()) + "card!";
+      Player &pandemic::Player::fly_shuttle(City city){
+           if(getCurrentCity() == city){
+             string message = "Can't fly from city to itself!";
              throw message;
          }
-         //remove this city's card from player's hand
-         removeCard(getCurrentCity());
-         this->currentCity = city;
-         return *this;
-     }
-
-     Player &pandemic::Player::fly_charter(City city){
-         CityContainer other = this->getCityContainer(city);
-         CityContainer current = this->getCityContainer(getCurrentCity());
-         //if there isn't research lab in current city or in the given city
-         if(!current.hasResearchLab() || other.hasResearchLab()){
-             string message = "Illegal action! doesn't have research lab in";
-             if(!current.hasResearchLab()) message + getBoard().cityToString(getCurrentCity());
-             else{message + getBoard().cityToString(city);}
+         CityContainer src = getCityContainer(currentCity);
+         CityContainer dest = getCityContainer(city);
+         if(!src.hasResearchLab() || !dest.hasResearchLab()){
+             string message = "One of the cities doesn't have research lab!";
              throw message;
          }
-         this->currentCity = city;
+         currentCity = city;
          return *this;
+         
      }
 
-     Board pandemic::Player::getBoard(){return board;}
+     Player& pandemic::Player::fly_charter(City city){
+         if(getCurrentCity() == city){
+             string message = "Can't fly from city to itself!";
+             throw message;
+         }
+         if(!hasCard(currentCity)){
+             Board& board = getBoard();
+             string message = "Doesn't have " + board.cityToString(currentCity) + " card!";
+             throw message;
+         }
+         removeCard(currentCity);
+         currentCity = city;
+         return *this;
+         }
+
+     Board& pandemic::Player::getBoard(){return board;}
 
      void pandemic::Player::build(){
-         CityContainer cityData = this->getCityContainer(currentCity);
-         //if current city already has research lab - do nothing
-         if(cityData.hasResearchLab()){ return; }
+         CityContainer& cityInfo = getCityContainer(currentCity);
          //if the player doesn't have current city's card
          if(!hasCard(getCurrentCity())){
-             string message = "Illegal action! doesn't have" + getBoard().cityToString(getCurrentCity()) + "card!";
-             throw message;
+             string message = "Illegal action! doesn't have" + getBoard().cityToString(getCurrentCity()) + " card!";
+             throw invalid_argument(message);
          }
          //remove this city's card from player's hand
          removeCard(currentCity);
-         cityData.buildResearchLab();
+         cityInfo.buildResearchLab();
      }
 
       void pandemic::Player::discover_cure(Color color){
-          CityContainer currentCityInfo = getCityContainer(getCurrentCity());
-          //if a cure already discovered - do nothing
-          if(currentCityInfo.hasCure()){return;}
+          CityContainer& currentCityInfo = getCityContainer(getCurrentCity());
             //if a research lab doesn't exist in this city
          if(!currentCityInfo.hasResearchLab()){
             throw "Illegal action! must have a research lab for this action!";
@@ -130,45 +130,46 @@
               string message = "Illegal action! doesn't have 5 " + getBoard().colorToEnum(color) + "card!";
               throw message;
           }
-          for(set<City>::iterator it = cityCards.begin(); it != cityCards.end(); ++it){
-              CityContainer temp = getCityContainer(*it);
-              Color currentColor = currentCityInfo.getColor();
+          set<City> cardsToDiscard;//will hold the 5 cards to remove
+          for(City card: cityCards ){
+              CityContainer& currentCard = getCityContainer(card);
+              Color currentColor = currentCard.getColor();
               //if there is a match
               if(currentColor == color){
-                  discard(*it);
+                  cardsToDiscard.insert(card);
                   counter++;
               }
               if(counter == 5) break;
+          }
+          for(City card : cardsToDiscard){
+              removeCard(card);
           }
           currentCityInfo.setCured();
       }
 
      Player &pandemic::Player::treat(City city){
-         City current = getCurrentCity();
-         if(city != current){
+         if(city != currentCity){
              string message = "Illegal action!" + this->getBoard().cityToString(city) + "isn't your current city!";
              throw message;
          }
-         CityContainer currentContainer = getCityContainer(city);
-         //if city is cured and it's disease level is more that 0 - set to zero
-         if(currentContainer.hasCure() && currentContainer.diseaseLevel > 0){
-             currentContainer.setDiseaseLevel(0);
+         CityContainer& cityInfo = getCityContainer(city);
+         if(cityInfo.diseaseLevel == 0){
+             throw "Current city is already cured!\n";
          }
-         //if city is cured and it's disease level is already 0 - an error
-         else if(currentContainer.hasCure() && currentContainer.diseaseLevel == 0){
-             string message = "Illegal action!" + this->getBoard().cityToString(city) + "is already cured!";
-             throw message;
+         //if city has cure - use it to lower disease level to zero
+         if(cityInfo.hasCure()){
+             while(cityInfo.diseaseLevel > 0){
+                 cityInfo.lowerDiseaseLevel();
+             }
          }
          else{
-             currentContainer.lowerDiseaseLevel();
+             cityInfo.lowerDiseaseLevel();
          }
          return *this;
      }
 
      Player& pandemic::Player::take_card(City city){
-         if(!hasCard(city)){
              cityCards.insert(city);
-         }
          return *this;
      }
 

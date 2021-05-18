@@ -6,7 +6,7 @@
 #define EX4_A_COLOR_HPP
 
 namespace pandemic{
-    enum Color{
+    enum class Color{
         Blue, Red, Black, Yellow
     };
 }

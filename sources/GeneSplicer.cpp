@@ -6,9 +6,7 @@
 
 namespace pandemic{
     void pandemic::GeneSplicer::discover_cure(Color color){
-          CityContainer currentCityInfo = getCityContainer(getCurrentCity());
-          //if a cure already discovered - do nothing
-          if(currentCityInfo.hasCure()){return;}
+          CityContainer& currentCityInfo = Player::getCityContainer(currentCity);
          //if a research lab doesn't exist in this city
          if(!currentCityInfo.hasResearchLab()){
             throw "Illegal action! must have a research lab for this action!";
@@ -19,14 +17,10 @@ namespace pandemic{
               string message = "Illegal action! doesn't have 5 card!";
               throw message;
           }
-          for(set<City>::iterator it = cityCards.begin(); it != cityCards.end(); ++it){
-              CityContainer temp = getCityContainer(*it);
-              Color currentColor = currentCityInfo.getColor();
-              //if there is a match
-              if(currentColor == color){
-                  discard(*it);
-                  counter++;
-              }
+          set<City> cardsToDiscard;//will hold the 5 cards to remove
+          for(auto& card:cityCards){
+              cardsToDiscard.insert(card);
+              counter++;
               if(counter == 5) break;
           }
           currentCityInfo.setCured();
